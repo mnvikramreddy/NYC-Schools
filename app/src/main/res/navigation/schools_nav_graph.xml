@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/schools_nav_graph"
+    app:startDestination="@id/highSchoolsFragment">
+
+    <fragment
+        android:id="@+id/highSchoolsFragment"
+        android:name="com.example.nycschools.ui.HighSchoolsFragment"
+        android:label="NYC Schools Directory"
+        tools:layout="@layout/fragment_high_schools" >
+        <action
+            android:id="@+id/action_highSchoolsFragment_to_SATScoresFragment"
+            app:destination="@id/SATScoresFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"/>
+    </fragment>
+    <fragment
+        android:id="@+id/SATScoresFragment"
+        android:name="com.example.nycschools.ui.SATScoresFragment"
+        android:label="SAT Scores"
+        tools:layout="@layout/fragment_sat_scores" >
+        <argument
+            android:name="schooldbn"
+            app:argType="string" />
+    </fragment>
+</navigation>

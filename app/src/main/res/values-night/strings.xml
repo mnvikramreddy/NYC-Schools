@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="sat_total_test_takers">SAT Total Test Takers %s</string>
+    <string name="sorry_we_didn_t_have_any_sat_scores_for_you">Sorry We Didn\'t have Any SAT Scores For You</string>
+    <string name="average_math_scores_s">Average Math Scores : %s</string>
+    <string name="average_reading_score_s">Average Reading Score : %s</string>
+    <string name="average_writing_score_s">Average Writing Score : %s</string>
+</resources>
