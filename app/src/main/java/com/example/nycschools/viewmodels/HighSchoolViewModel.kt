@@ -15,17 +15,18 @@ class HighSchoolViewModel @Inject constructor(
     private val schoolsRepository: SchoolsRepository
 ) : ViewModel() {
 
-    private val _schoolListUiState = MutableLiveData<List<SchoolsDirectoryResponse>>(emptyList())
+    private val _schoolListUiState by lazy { MutableLiveData<List<SchoolsDirectoryResponse>>(emptyList()) }
     val schoolListUiState: LiveData<List<SchoolsDirectoryResponse>> = _schoolListUiState
 
     private val _error = MutableLiveData<Boolean>()
-    val error : LiveData<Boolean> = _error
+    val error: LiveData<Boolean> = _error
 
     private val _isLoading = MutableLiveData(false)
     val isLoading: LiveData<Boolean> = _isLoading
 
     init {
-        getSchoolDirectoryFeed()
+//        checkLocal()
+//        getSchoolDirectoryFeed()
     }
 
     /**
@@ -36,7 +37,7 @@ class HighSchoolViewModel @Inject constructor(
     fun getSchoolDirectoryFeed() {
         viewModelScope.launch {
             _isLoading.value = true
-            _error.value=false
+            _error.value = false
             Log.d("HIGH SCHOOL VIEW MODEL ", schoolsRepository.toString())
             val response = schoolsRepository.getSchoolDirectory()
 
@@ -52,6 +53,12 @@ class HighSchoolViewModel @Inject constructor(
                 }
             }
             _isLoading.value = false
+        }
+    }
+
+    fun getSearchList(query: String) {
+        viewModelScope.launch {
+            _schoolListUiState.value = schoolsRepository.getSchoolSearchList(query)
         }
     }
 }

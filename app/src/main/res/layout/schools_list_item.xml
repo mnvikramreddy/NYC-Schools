@@ -109,7 +109,7 @@
                 android:textColorLink="@color/black"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/website"
-                tools:text="124 street,city,state 12345" />
+                tools:text="1234 street,city,state 12345" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>
 </layout>

@@ -29,11 +29,9 @@ class SchoolsListAdapter(private val adapterOnClick: (String) -> Unit) :
             adapterOnClick: (String) -> Unit
         ) {
             schoolsListItemBinding.root.setOnClickListener {
-                schoolsDirectoryResponse.dbn?.let { dbn ->
-                    adapterOnClick(
-                        dbn
-                    )
-                }
+                adapterOnClick(
+                    schoolsDirectoryResponse.dbn
+                )
             }
             schoolsListItemBinding.run {
                 schoolResponse = schoolsDirectoryResponse

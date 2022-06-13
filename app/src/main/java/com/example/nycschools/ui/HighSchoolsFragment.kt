@@ -1,20 +1,23 @@
 package com.example.nycschools.ui
 
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.util.Log
+import android.view.*
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.nycschools.MainActivity
+import com.example.nycschools.R
+import com.example.nycschools.database.AppDatabase
 import com.example.nycschools.databinding.FragmentHighSchoolsBinding
 import com.example.nycschools.viewmodels.HighSchoolViewModel
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class HighSchoolsFragment : Fragment() {
@@ -25,6 +28,9 @@ class HighSchoolsFragment : Fragment() {
 
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
+
+    @Inject
+    lateinit var database: AppDatabase
 
     private val highSchoolViewModel by viewModels<HighSchoolViewModel> { viewModelFactory }
 
@@ -52,9 +58,38 @@ class HighSchoolsFragment : Fragment() {
             layoutManager = LinearLayoutManager(context)
             adapter = schoolsListAdapter
         }
+        setHasOptionsMenu(true)
+        checkLocal()
         setupSearch()
         subscribeUi()
         return highSchoolsBinding.root
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.menu_school_directory, menu)
+
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.menu_search_bar ->{
+                if (item is SearchView) {
+                    item.setOnQueryTextListener(object :
+                        SearchView.OnQueryTextListener {
+                        override fun onQueryTextSubmit(query: String?): Boolean {
+                            return false
+                        }
+
+                        override fun onQueryTextChange(newText: String?): Boolean {
+                            highSchoolViewModel.getSearchList(query = newText.toString())
+                            return true
+                        }
+                    })
+                }
+                return true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
     }
 
     /**
@@ -70,9 +105,10 @@ class HighSchoolsFragment : Fragment() {
 
             override fun onQueryTextChange(newText: String?): Boolean {
                 val list = highSchoolViewModel.schoolListUiState.value ?: emptyList()
-                schoolsListAdapter.submitList(list.filter {
-                    it.schoolName?.uppercase()?.contains(newText.toString().uppercase()) == true
-                })
+                highSchoolViewModel.getSearchList(query = newText.toString())
+//                schoolsListAdapter.submitList(list.filter {
+//                    it.schoolName?.uppercase()?.contains(newText.toString().uppercase()) == true
+//                })
                 return true
             }
         })
@@ -85,10 +121,28 @@ class HighSchoolsFragment : Fragment() {
         }
     }
 
+    private fun checkLocal() {
+        lifecycleScope.launch {
+            database.SchoolDirectoryDao().getSchoolDirectoryResponseList()
+                .observe(viewLifecycleOwner) {
+                    if (it.isEmpty()) {
+                        Log.d("HIGH SCHOOL FRAGMENT ", "MADE NETWORK CALL")
+                        highSchoolViewModel.getSchoolDirectoryFeed()
+                    } else {
+                        Log.d("HIGH SCHOOL FRAGMENT ", "UPDATED LIST FROM DB")
+                        schoolsListAdapter.submitList(it.toMutableList())
+                    }
+                }
+        }
+    }
+
     private fun navigateToResultScreen(dbn: String) {
         val directions =
             HighSchoolsFragmentDirections.actionHighSchoolsFragmentToSATScoresFragment(dbn)
         findNavController().navigate(directions)
     }
 
+    override fun setHasOptionsMenu(hasMenu: Boolean) {
+        super.setHasOptionsMenu(hasMenu)
+    }
 }

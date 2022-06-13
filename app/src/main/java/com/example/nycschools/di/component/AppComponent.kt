@@ -1,6 +1,7 @@
 package com.example.nycschools.di.component
 
 import android.content.Context
+import com.example.nycschools.di.modules.AppModule
 import com.example.nycschools.di.modules.NetworkModule
 import com.example.nycschools.di.modules.ViewModelFactoryBuilderModule
 import dagger.BindsInstance
@@ -11,6 +12,7 @@ import javax.inject.Singleton
 @Singleton
 @Component(
     modules = [
+        AppModule::class,
         NetworkModule::class,
         ViewModelFactoryBuilderModule::class,
         SubComponentsModule::class

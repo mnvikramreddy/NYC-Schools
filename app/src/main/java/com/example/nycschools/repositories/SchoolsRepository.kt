@@ -1,6 +1,7 @@
 package com.example.nycschools.repositories
 
 import android.util.Log
+import com.example.nycschools.database.AppDatabase
 import com.example.nycschools.di.scope.PerSchoolComponent
 import com.example.nycschools.network.SchoolsService
 import com.example.nycschools.network.ServiceResponse
@@ -14,12 +15,16 @@ import javax.inject.Inject
  * or Some business logic which is used in multiple places
  * */
 @PerSchoolComponent
-class SchoolsRepository @Inject constructor(private val schoolsService: SchoolsService) {
+class SchoolsRepository @Inject constructor(private val schoolsService: SchoolsService,
+                                            private val database: AppDatabase) {
 
 
     suspend fun getSchoolDirectory(): ServiceResponse<List<SchoolsDirectoryResponse>> =
         try {
-            ServiceResponse.Success(schoolsService.getSchoolDirectoryFeed())
+            val response = ServiceResponse.Success(schoolsService.getSchoolDirectoryFeed())
+            Log.d("RESPONSE", response.data.size.toString())
+            database.SchoolDirectoryDao().insertSchoolDirectoryResponseList(response.data)
+            response
         } catch (exception: Exception) {
             ServiceResponse.Error(error = exception.toString())
         }
@@ -32,5 +37,9 @@ class SchoolsRepository @Inject constructor(private val schoolsService: SchoolsS
         } catch (exception: Exception) {
             ServiceResponse.Error(error = exception.toString())
         }
+    }
+
+    suspend fun getSchoolSearchList(query:String):List<SchoolsDirectoryResponse>{
+       return database.SchoolDirectoryDao().getSchoolDirectorySearchList("%$query%")
     }
 }

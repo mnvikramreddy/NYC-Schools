@@ -1,11 +1,17 @@
 package com.example.nycschools.network.model
 
+import androidx.room.ColumnInfo
+import androidx.room.Entity
+import androidx.room.Fts4
+import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
 
+@Entity
 data class SchoolsDirectoryResponse(
 
+    @PrimaryKey
     @SerializedName("dbn")
-    val dbn: String? = null,
+    val dbn: String,
     @SerializedName("school_name")
     val schoolName: String? = null,
     @SerializedName("boro")
